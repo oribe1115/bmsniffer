@@ -21,6 +21,11 @@ func TestLineOfCode(t *testing.T) {
 			FileName: "a/a.go",
 			Expected: 1,
 		},
+		{
+			Name:     "simple function",
+			FileName: "b/b.go",
+			Expected: 9,
+		},
 	}
 
 	for _, test := range tests {
