@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"go/types"
 	"testing"
 )
 
@@ -29,4 +30,27 @@ func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.Fun
 	}
 
 	return fset, funcDecl, nil
+}
+
+func getFsetAndInfo(t *testing.T, filename string, pkgPath string) (*token.FileSet, *types.Info, error) {
+	t.Helper()
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, filename, nil, 0)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	info := &types.Info{
+		Types:  make(map[ast.Expr]types.TypeAndValue),
+		Defs:   make(map[*ast.Ident]types.Object),
+		Uses:   make(map[*ast.Ident]types.Object),
+		Scopes: make(map[ast.Node]*types.Scope),
+	}
+	var conf types.Config
+	_, err = conf.Check(pkgPath, fset, []*ast.File{file}, info)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return fset, info, nil
 }
