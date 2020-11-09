@@ -63,6 +63,18 @@ func inspectNestLevel(n ast.Node) int {
 				nestLevel = max + 1
 			}
 			return false
+		case *ast.SelectStmt:
+			var max int
+			for _, child := range n.Body.List {
+				tmp := inspectNestLevel(child)
+				if tmp > max {
+					max = tmp
+				}
+			}
+			if max+1 > nestLevel {
+				nestLevel = max + 1
+			}
+			return false
 		}
 
 		return true
