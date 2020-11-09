@@ -51,6 +51,10 @@ func inspectNestLevel(n ast.Node) int {
 			max := inlChildren(n.Body.List)
 			nestLevel = getMax(nestLevel, max+1)
 			return false
+		case *ast.ForStmt:
+			max := inspectNestLevel(n.Body)
+			nestLevel = getMax(nestLevel, max+1)
+			return false
 		}
 
 		return true
