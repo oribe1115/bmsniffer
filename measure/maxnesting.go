@@ -4,6 +4,7 @@ import (
 	"go/ast"
 )
 
+// MaxNestingLevel 対象の関数のMAXNESTINGを計測する
 func MaxNestingLevel(funcDecl *ast.FuncDecl) int {
 	return inspectNestLevel(funcDecl.Body)
 }
