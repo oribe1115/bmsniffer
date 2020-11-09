@@ -35,45 +35,21 @@ func inspectNestLevel(n ast.Node) int {
 					max = tmp
 				}
 			}
-			if max+1 > nestLevel {
-				nestLevel = max + 1
-			}
+
+			nestLevel = getMax(nestLevel, max+1)
+
 			return false
 		case *ast.SwitchStmt:
-			var max int
-			for _, child := range n.Body.List {
-				tmp := inspectNestLevel(child)
-				if tmp > max {
-					max = tmp
-				}
-			}
-			if max+1 > nestLevel {
-				nestLevel = max + 1
-			}
+			max := inlChildren(n.Body.List)
+			nestLevel = getMax(nestLevel, max+1)
 			return false
 		case *ast.TypeSwitchStmt:
-			var max int
-			for _, child := range n.Body.List {
-				tmp := inspectNestLevel(child)
-				if tmp > max {
-					max = tmp
-				}
-			}
-			if max+1 > nestLevel {
-				nestLevel = max + 1
-			}
+			max := inlChildren(n.Body.List)
+			nestLevel = getMax(nestLevel, max+1)
 			return false
 		case *ast.SelectStmt:
-			var max int
-			for _, child := range n.Body.List {
-				tmp := inspectNestLevel(child)
-				if tmp > max {
-					max = tmp
-				}
-			}
-			if max+1 > nestLevel {
-				nestLevel = max + 1
-			}
+			max := inlChildren(n.Body.List)
+			nestLevel = getMax(nestLevel, max+1)
 			return false
 		}
 
@@ -81,4 +57,22 @@ func inspectNestLevel(n ast.Node) int {
 	})
 
 	return nestLevel
+}
+
+func getMax(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func inlChildren(children []ast.Stmt) int {
+	var max int
+	for _, child := range children {
+		tmp := inspectNestLevel(child)
+		if tmp > max {
+			max = tmp
+		}
+	}
+	return max
 }
