@@ -7,6 +7,7 @@ import (
 
 var objExists = struct{}{}
 
+// NumberOfAccessedVariables 対象の関数のNOAVを計測する
 func NumberOfAccessedVariables(funcDecl *ast.FuncDecl, info *types.Info) int {
 	usedVarMap := map[types.Object]struct{}{}
 
