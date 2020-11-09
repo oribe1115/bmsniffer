@@ -32,9 +32,7 @@ func inspectNestLevel(n ast.Node) int {
 					tmp = inspectNestLevel(child)
 					child = nil
 				}
-				if tmp > max {
-					max = tmp
-				}
+				max = getMax(max, tmp)
 			}
 
 			nestLevel = getMax(nestLevel, max+1)
