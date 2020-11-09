@@ -26,6 +26,16 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 			FileName: "b/b.go",
 			Expected: 1,
 		},
+		{
+			Name:     "simple pkgVar",
+			FileName: "c/c.go",
+			Expected: 2,
+		},
+		{
+			Name:     "simple attribute",
+			FileName: "d/d.go",
+			Expected: 2,
+		},
 	}
 
 	for _, test := range tests {

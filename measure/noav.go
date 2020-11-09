@@ -18,7 +18,12 @@ func NumberOfAccessedVariables(funcDecl *ast.FuncDecl, info *types.Info) int {
 		switch n := n.(type) {
 		case *ast.Ident:
 			obj := info.ObjectOf(n)
-			usedVarMap[obj] = objExists
+			switch obj := obj.(type) {
+			case *types.Var:
+				usedVarMap[obj] = objExists
+			case *types.Const:
+				usedVarMap[obj] = objExists
+			}
 		}
 
 		return true
