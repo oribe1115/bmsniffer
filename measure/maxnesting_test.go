@@ -49,12 +49,12 @@ func TestMaxNestingLevel(t *testing.T) {
 		{
 			Name:     "nesting with funclit",
 			FileName: "g/g.go",
-			Expected: 3,
+			Expected: 4,
 		},
 		{
 			Name:     "nesting with all",
 			FileName: "z/z.go",
-			Expected: 6,
+			Expected: 7,
 		},
 	}
 

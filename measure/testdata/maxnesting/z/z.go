@@ -21,6 +21,7 @@ func z() {
 					for i = 0; i < 2; i++ {
 						select {
 						case m := <-c1:
+							go func() {}()
 						case m := <-c2:
 						}
 					}
