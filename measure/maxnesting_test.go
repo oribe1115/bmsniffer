@@ -26,6 +26,11 @@ func TestMaxNestingLevel(t *testing.T) {
 			FileName: "b/b.go",
 			Expected: 3,
 		},
+		{
+			Name:     "nesting with switch",
+			FileName: "c/c.go",
+			Expected: 3,
+		},
 	}
 
 	for _, test := range tests {

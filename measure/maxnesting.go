@@ -1,6 +1,8 @@
 package measure
 
-import "go/ast"
+import (
+	"go/ast"
+)
 
 func MaxNestingLevel(funcDecl *ast.FuncDecl) int {
 	return countNestingLevel(funcDecl.Body)
@@ -33,6 +35,15 @@ func countNestingLevel(stmt ast.Stmt) int {
 				childStmt = nil
 			}
 
+			if tmp > max {
+				max = tmp
+			}
+		}
+		return max + 1
+	case *ast.SwitchStmt:
+		var max int
+		for _, childStmt := range stmt.Body.List {
+			tmp := countNestingLevel(childStmt)
 			if tmp > max {
 				max = tmp
 			}
