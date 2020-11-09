@@ -36,6 +36,16 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 			FileName: "d/d.go",
 			Expected: 2,
 		},
+		{
+			Name:     "multipule assign",
+			FileName: "e/e.go",
+			Expected: 4,
+		},
+		{
+			Name:     "redecl with typeswitch",
+			FileName: "f/f.go",
+			Expected: 4,
+		},
 	}
 
 	for _, test := range tests {

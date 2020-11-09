@@ -3,6 +3,7 @@ package measure
 import (
 	"fmt"
 	"go/ast"
+	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
@@ -46,7 +47,7 @@ func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *
 		Uses:   make(map[*ast.Ident]types.Object),
 		Scopes: make(map[ast.Node]*types.Scope),
 	}
-	var conf types.Config
+	conf := &types.Config{Importer: importer.Default()}
 	_, err = conf.Check("", fset, []*ast.File{file}, info)
 	if err != nil {
 		return nil, nil, nil, err
