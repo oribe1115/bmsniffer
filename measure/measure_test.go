@@ -32,12 +32,12 @@ func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.Fun
 	return fset, funcDecl, nil
 }
 
-func getFsetAndInfo(t *testing.T, filename string, pkgPath string) (*token.FileSet, *types.Info, error) {
+func getFsetAndFuncDeclAndInfo(t *testing.T, filename string, pkgPath string) (*token.FileSet, *ast.FuncDecl, *types.Info, error) {
 	t.Helper()
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	info := &types.Info{
@@ -49,8 +49,20 @@ func getFsetAndInfo(t *testing.T, filename string, pkgPath string) (*token.FileS
 	var conf types.Config
 	_, err = conf.Check(pkgPath, fset, []*ast.File{file}, info)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return fset, info, nil
+	var funcDecl *ast.FuncDecl
+	for _, decl := range file.Decls {
+		funcDecl, _ = decl.(*ast.FuncDecl)
+		if funcDecl != nil {
+			break
+		}
+	}
+
+	if funcDecl == nil {
+		return nil, nil, nil, fmt.Errorf("faild to find FuncDecl")
+	}
+
+	return fset, funcDecl, info, nil
 }
