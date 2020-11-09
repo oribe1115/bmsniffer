@@ -14,13 +14,16 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 	tests := []struct {
 		Name     string
 		FileName string
-		PkgPath  string
 		Expected int
 	}{
 		{
-			Name:     "simple func",
+			Name:     "simple var",
 			FileName: "a/a.go",
-			PkgPath:  "a",
+			Expected: 1,
+		},
+		{
+			Name:     "simple recv",
+			FileName: "b/b.go",
 			Expected: 1,
 		},
 	}
@@ -30,7 +33,7 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, funcDecl, info, err := getFsetAndFuncDeclAndInfo(t, dirPath+test.FileName, test.PkgPath)
+			_, funcDecl, info, err := getFsetAndFuncDeclAndInfo(t, dirPath+test.FileName)
 			assert.NoError(t, err)
 
 			got := NumberOfAccessedVariables(funcDecl, info)

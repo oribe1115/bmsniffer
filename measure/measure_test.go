@@ -32,7 +32,7 @@ func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.Fun
 	return fset, funcDecl, nil
 }
 
-func getFsetAndFuncDeclAndInfo(t *testing.T, filename string, pkgPath string) (*token.FileSet, *ast.FuncDecl, *types.Info, error) {
+func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl, *types.Info, error) {
 	t.Helper()
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, filename, nil, 0)
@@ -47,7 +47,7 @@ func getFsetAndFuncDeclAndInfo(t *testing.T, filename string, pkgPath string) (*
 		Scopes: make(map[ast.Node]*types.Scope),
 	}
 	var conf types.Config
-	_, err = conf.Check(pkgPath, fset, []*ast.File{file}, info)
+	_, err = conf.Check("", fset, []*ast.File{file}, info)
 	if err != nil {
 		return nil, nil, nil, err
 	}
