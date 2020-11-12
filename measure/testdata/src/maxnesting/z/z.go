@@ -21,8 +21,10 @@ func z() {
 					for i = 0; i < 2; i++ {
 						select {
 						case m := <-c1:
+							m += ""
 							go func() {}()
 						case m := <-c2:
+							m += ""
 						}
 					}
 				case 1:

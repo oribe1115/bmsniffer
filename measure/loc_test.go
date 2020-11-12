@@ -9,7 +9,7 @@ import (
 func TestLineOfCode(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/src/loc/"
+	dirPath := "loc/"
 
 	tests := []struct {
 		Name     string
@@ -18,12 +18,12 @@ func TestLineOfCode(t *testing.T) {
 	}{
 		{
 			Name:     "blank function",
-			FileName: "a/a.go",
+			FileName: "a",
 			Expected: 1,
 		},
 		{
 			Name:     "simple function",
-			FileName: "b/b.go",
+			FileName: "b",
 			Expected: 9,
 		},
 	}
@@ -33,8 +33,7 @@ func TestLineOfCode(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			fset, funcDecl, err := getFsetAndFuncDecl(t, dirPath+test.FileName)
-			assert.NoError(t, err)
+			fset, funcDecl := getFsetAndFuncDecl(t, dirPath+test.FileName)
 
 			got := LineOfCode(fset, funcDecl)
 			assert.Equal(t, test.Expected, got)

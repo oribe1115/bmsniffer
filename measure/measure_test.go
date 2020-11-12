@@ -11,30 +11,26 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 	"golang.org/x/tools/go/analysis/passes/buildssa"
+	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ssa"
 )
 
-func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl, error) {
+func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl) {
 	t.Helper()
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, filename, nil, 0)
-	if err != nil {
-		return nil, nil, err
-	}
+
+	testdata := analysistest.TestData()
+	result := analysistest.Run(t, testdata, inspect.Analyzer, filename)[0]
+	pass := result.Pass
 
 	var funcDecl *ast.FuncDecl
-	for _, decl := range file.Decls {
+	for _, decl := range pass.Files[0].Decls {
 		funcDecl, _ = decl.(*ast.FuncDecl)
 		if funcDecl != nil {
 			break
 		}
 	}
 
-	if funcDecl == nil {
-		return nil, nil, fmt.Errorf("faild to find FuncDecl")
-	}
-
-	return fset, funcDecl, nil
+	return pass.Fset, funcDecl
 }
 
 func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl, *types.Info, error) {

@@ -14,9 +14,12 @@ func e() {
 
 	select {
 	case m := <-c1:
+		m += ""
 		select {
 		case n := <-c2:
+			n += ""
 		}
 	case m := <-c2:
+		m += ""
 	}
 }

@@ -9,7 +9,7 @@ import (
 func TestMaxNestingLevel(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/src/maxnesting/"
+	dirPath := "maxnesting/"
 
 	tests := []struct {
 		Name     string
@@ -18,42 +18,42 @@ func TestMaxNestingLevel(t *testing.T) {
 	}{
 		{
 			Name:     "blank function",
-			FileName: "a/a.go",
+			FileName: "a",
 			Expected: 0,
 		},
 		{
 			Name:     "nesting with ifelse",
-			FileName: "b/b.go",
+			FileName: "b",
 			Expected: 3,
 		},
 		{
 			Name:     "nesting with switch",
-			FileName: "c/c.go",
+			FileName: "c",
 			Expected: 3,
 		},
 		{
 			Name:     "nesting with typeswitch",
-			FileName: "d/d.go",
+			FileName: "d",
 			Expected: 3,
 		},
 		{
 			Name:     "nesting with select",
-			FileName: "e/e.go",
+			FileName: "e",
 			Expected: 2,
 		},
 		{
 			Name:     "nesting with for",
-			FileName: "f/f.go",
+			FileName: "f",
 			Expected: 4,
 		},
 		{
 			Name:     "nesting with funclit",
-			FileName: "g/g.go",
+			FileName: "g",
 			Expected: 4,
 		},
 		{
 			Name:     "nesting with all",
-			FileName: "z/z.go",
+			FileName: "z",
 			Expected: 7,
 		},
 	}
@@ -63,8 +63,7 @@ func TestMaxNestingLevel(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, funcDecl, err := getFsetAndFuncDecl(t, dirPath+test.FileName)
-			assert.NoError(t, err)
+			_, funcDecl := getFsetAndFuncDecl(t, dirPath+test.FileName)
 
 			got := MaxNestingLevel(funcDecl)
 			assert.Equal(t, test.Expected, got)
