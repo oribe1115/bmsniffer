@@ -43,7 +43,7 @@ func TestCyclomaticComplexity(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, ssaFunc := getSSAFunc(t, dirPath+test.FileName)
+			ssaFunc := getSSAFunc(t, dirPath+test.FileName)
 
 			got := CyclomaticComplexity(ssaFunc)
 			assert.Equal(t, test.Expected, got)
@@ -93,7 +93,7 @@ func TestCountFlowGraphValues(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, ssaFunc := getSSAFunc(t, dirPath+test.FileName)
+			ssaFunc := getSSAFunc(t, dirPath+test.FileName)
 
 			gotNodeCount, gotEdgeCount := countFlowGraphValues(ssaFunc)
 			assert.Equal(t, test.ExpectedNodeCount, gotNodeCount)
