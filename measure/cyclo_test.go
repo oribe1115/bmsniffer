@@ -6,34 +6,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// func TestCyclomaticComplexity(t *testing.T) {
-// 	t.Parallel()
+func TestCyclomaticComplexity(t *testing.T) {
+	t.Parallel()
 
-// 	dirPath := "cyclo/"
+	dirPath := "cyclo/"
 
-// 	tests := []struct {
-// 		Name     string
-// 		FileName string
-// 		Expected int
-// 	}{
-// 		{
-// 			Name:     "simple func",
-// 			FileName: "a",
-// 			Expected: 1,
-// 		},
-// 	}
+	tests := []struct {
+		Name     string
+		FileName string
+		Expected int
+	}{
+		{
+			Name:     "simple func",
+			FileName: "a",
+			Expected: 1,
+		},
+		{
+			Name:     "branch with ifelse",
+			FileName: "b",
+			Expected: 2,
+		},
+		{
+			Name:     "branch with simple for",
+			FileName: "c",
+			Expected: 2,
+		},
+		{
+			Name:     "branch with switch",
+			FileName: "d",
+			Expected: 3,
+		},
+	}
 
-// 	for _, test := range tests {
-// 		test := test
-// 		t.Run(test.Name, func(t *testing.T) {
-// 			t.Parallel()
+	for _, test := range tests {
+		test := test
+		t.Run(test.Name, func(t *testing.T) {
+			t.Parallel()
 
-// 			_, ssaFunc := getSSAFunc(t, dirPath+test.FileName)
+			_, ssaFunc := getSSAFunc(t, dirPath+test.FileName)
 
-// 			CyclomaticComplexity(ssaFunc)
-// 		})
-// 	}
-// }
+			got := CyclomaticComplexity(ssaFunc)
+			assert.Equal(t, test.Expected, got)
+		})
+	}
+}
 
 func TestCountFlowGraphValues(t *testing.T) {
 	t.Parallel()

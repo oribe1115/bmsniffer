@@ -10,10 +10,12 @@ type blockQueue struct {
 
 var indexExist = struct{}{}
 
-func CyclomaticComplexity(ssaFunc *ssa.Function) {
-	// for _, ssaBlock := range ssaFunc.Blocks {
-	// 	fmt.Println(ssaBlock.Index, ssaBlock.Instrs, ssaBlock.Succs)
-	// }
+// CyclomaticComplexity 対象の関数のCYCLOを計算する
+func CyclomaticComplexity(ssaFunc *ssa.Function) int {
+	// v(G) = e-n+p
+	n, e := countFlowGraphValues(ssaFunc)
+	p := 2 // 連結されたコンポーネントの数 決め打ちでこれでいいのか確認
+	return e - n + p
 }
 
 func countFlowGraphValues(ssaFunc *ssa.Function) (nodeCount int, edgeCount int) {
