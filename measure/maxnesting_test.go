@@ -9,7 +9,7 @@ import (
 func TestMaxNestingLevel(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/maxnesting/"
+	dirPath := "testdata/src/maxnesting/"
 
 	tests := []struct {
 		Name     string

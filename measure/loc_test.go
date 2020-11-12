@@ -9,7 +9,7 @@ import (
 func TestLineOfCode(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/loc/"
+	dirPath := "testdata/src/loc/"
 
 	tests := []struct {
 		Name     string

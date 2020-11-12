@@ -9,7 +9,7 @@ import (
 func TestNumberOfAccessedVariables(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/noav/"
+	dirPath := "testdata/src/noav/"
 
 	tests := []struct {
 		Name     string
