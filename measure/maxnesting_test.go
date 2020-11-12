@@ -52,6 +52,11 @@ func TestMaxNestingLevel(t *testing.T) {
 			Expected: 4,
 		},
 		{
+			Name:     "nesting with for range",
+			FileName: "h",
+			Expected: 1,
+		},
+		{
 			Name:     "nesting with all",
 			FileName: "z",
 			Expected: 7,
