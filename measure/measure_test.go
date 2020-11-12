@@ -1,10 +1,7 @@
 package measure
 
 import (
-	"fmt"
 	"go/ast"
-	"go/importer"
-	"go/parser"
 	"go/token"
 	"go/types"
 	"testing"
@@ -33,39 +30,22 @@ func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.Fun
 	return pass.Fset, funcDecl
 }
 
-func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl, *types.Info, error) {
+func getFuncDeclAndTypeInfo(t *testing.T, filename string) (*ast.FuncDecl, *types.Info) {
 	t.Helper()
-	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, filename, nil, 0)
-	if err != nil {
-		return nil, nil, nil, err
-	}
 
-	info := &types.Info{
-		Types:  make(map[ast.Expr]types.TypeAndValue),
-		Defs:   make(map[*ast.Ident]types.Object),
-		Uses:   make(map[*ast.Ident]types.Object),
-		Scopes: make(map[ast.Node]*types.Scope),
-	}
-	conf := &types.Config{Importer: importer.Default()}
-	_, err = conf.Check("", fset, []*ast.File{file}, info)
-	if err != nil {
-		return nil, nil, nil, err
-	}
+	testdata := analysistest.TestData()
+	result := analysistest.Run(t, testdata, inspect.Analyzer, filename)[0]
+	pass := result.Pass
 
 	var funcDecl *ast.FuncDecl
-	for _, decl := range file.Decls {
+	for _, decl := range pass.Files[0].Decls {
 		funcDecl, _ = decl.(*ast.FuncDecl)
 		if funcDecl != nil {
 			break
 		}
 	}
 
-	if funcDecl == nil {
-		return nil, nil, nil, fmt.Errorf("faild to find FuncDecl")
-	}
-
-	return fset, funcDecl, info, nil
+	return funcDecl, pass.TypesInfo
 }
 
 func getSSAFunc(t *testing.T, filename string) *ssa.Function {

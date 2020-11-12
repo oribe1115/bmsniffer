@@ -9,7 +9,7 @@ import (
 func TestNumberOfAccessedVariables(t *testing.T) {
 	t.Parallel()
 
-	dirPath := "testdata/src/noav/"
+	dirPath := "noav/"
 
 	tests := []struct {
 		Name     string
@@ -18,32 +18,32 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 	}{
 		{
 			Name:     "simple var",
-			FileName: "a/a.go",
+			FileName: "a",
 			Expected: 1,
 		},
 		{
 			Name:     "simple recv",
-			FileName: "b/b.go",
+			FileName: "b",
 			Expected: 1,
 		},
 		{
 			Name:     "simple pkgVar",
-			FileName: "c/c.go",
+			FileName: "c",
 			Expected: 2,
 		},
 		{
 			Name:     "simple attribute",
-			FileName: "d/d.go",
+			FileName: "d",
 			Expected: 2,
 		},
 		{
 			Name:     "multipule assign",
-			FileName: "e/e.go",
+			FileName: "e",
 			Expected: 4,
 		},
 		{
 			Name:     "redecl with typeswitch",
-			FileName: "f/f.go",
+			FileName: "f",
 			Expected: 4,
 		},
 	}
@@ -53,8 +53,7 @@ func TestNumberOfAccessedVariables(t *testing.T) {
 		t.Run(test.Name, func(t *testing.T) {
 			t.Parallel()
 
-			_, funcDecl, info, err := getFsetAndFuncDeclAndInfo(t, dirPath+test.FileName)
-			assert.NoError(t, err)
+			funcDecl, info := getFuncDeclAndTypeInfo(t, dirPath+test.FileName)
 
 			got := NumberOfAccessedVariables(funcDecl, info)
 			assert.Equal(t, test.Expected, got)
