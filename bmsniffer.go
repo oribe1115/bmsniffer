@@ -1,11 +1,14 @@
 package bmsniffer
 
 import (
+	"fmt"
 	"go/ast"
 
+	"github.com/oribe1115/bmsniffer/measure"
 	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
-	"golang.org/x/tools/go/ast/inspector"
+	"golang.org/x/tools/go/ssa"
 )
 
 const doc = "bmsniffer is ..."
@@ -17,25 +20,36 @@ var Analyzer = &analysis.Analyzer{
 	Run:  run,
 	Requires: []*analysis.Analyzer{
 		inspect.Analyzer,
+		buildssa.Analyzer,
 	},
 }
 
 func run(pass *analysis.Pass) (interface{}, error) {
-	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
+	ssaInfo := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
+	ssaFuncMap := getSSAFuncMap(ssaInfo)
 
-	nodeFilter := []ast.Node{
-		(*ast.Ident)(nil),
-	}
-
-	inspect.Preorder(nodeFilter, func(n ast.Node) {
-		switch n := n.(type) {
-		case *ast.Ident:
-			if n.Name == "gopher" {
-				pass.Reportf(n.Pos(), "identifier is gopher")
+	for _, file := range pass.Files {
+		for _, decl := range file.Decls {
+			if funcDecl, _ := decl.(*ast.FuncDecl); funcDecl != nil {
+				loc := measure.LineOfCode(pass.Fset, funcDecl)
+				maxnesting := measure.MaxNestingLevel(funcDecl)
+				noav := measure.NumberOfAccessedVariables(funcDecl, pass.TypesInfo)
+				ssaFunc, _ := ssaFuncMap[funcDecl.Name.Name]
+				cyclo := measure.CyclomaticComplexity(ssaFunc)
+				fmt.Println(funcDecl.Name.Name, loc, maxnesting, noav, cyclo)
 			}
 		}
-	})
+	}
 
 	return nil, nil
 }
 
+func getSSAFuncMap(ssaInfo *buildssa.SSA) map[string]*ssa.Function {
+	ssaFuncMap := map[string]*ssa.Function{}
+
+	for _, ssaFunc := range ssaInfo.SrcFuncs {
+		ssaFuncMap[ssaFunc.Name()] = ssaFunc
+	}
+
+	return ssaFuncMap
+}
