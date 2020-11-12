@@ -8,6 +8,11 @@ import (
 	"go/token"
 	"go/types"
 	"testing"
+
+	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/analysistest"
+	"golang.org/x/tools/go/analysis/passes/buildssa"
+	"golang.org/x/tools/go/ssa"
 )
 
 func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl, error) {
@@ -66,4 +71,16 @@ func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *
 	}
 
 	return fset, funcDecl, info, nil
+}
+
+func getSSAFunc(t *testing.T, filename string) (*analysis.Pass, *ssa.Function) {
+	t.Helper()
+
+	testdata := analysistest.TestData() // ここは変える必要がありそう
+	result := analysistest.Run(t, testdata, buildssa.Analyzer, filename)[0]
+
+	pass := result.Pass
+	ssainfo := result.Result.(*buildssa.SSA)
+
+	return pass, ssainfo.SrcFuncs[0]
 }
