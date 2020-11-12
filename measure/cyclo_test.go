@@ -52,6 +52,24 @@ func TestCountFlowGraphValues(t *testing.T) {
 			ExpectedNodeCount: 1,
 			ExpectedEdgeCount: 0,
 		},
+		{
+			Name:              "branch with ifelse",
+			FileName:          "b",
+			ExpectedNodeCount: 4,
+			ExpectedEdgeCount: 4,
+		},
+		{
+			Name:              "branch with simple for",
+			FileName:          "c",
+			ExpectedNodeCount: 3,
+			ExpectedEdgeCount: 3,
+		},
+		{
+			Name:              "branch with switch",
+			FileName:          "d",
+			ExpectedNodeCount: 6,
+			ExpectedEdgeCount: 7,
+		},
 	}
 
 	for _, test := range tests {
