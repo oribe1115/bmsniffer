@@ -75,7 +75,7 @@ func getFsetAndFuncDeclAndInfo(t *testing.T, filename string) (*token.FileSet, *
 func getSSAFunc(t *testing.T, filename string) *ssa.Function {
 	t.Helper()
 
-	testdata := analysistest.TestData() // ここは変える必要がありそう
+	testdata := analysistest.TestData()
 	result := analysistest.Run(t, testdata, buildssa.Analyzer, filename)[0]
 
 	ssainfo := result.Result.(*buildssa.SSA)
