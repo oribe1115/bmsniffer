@@ -58,7 +58,11 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	for _, file := range pass.Files {
 		for _, decl := range file.Decls {
 			if funcDecl, _ := decl.(*ast.FuncDecl); funcDecl != nil {
-				ssaFunc, _ := ssaFuncMap[funcDecl.Name.Name]
+				ssaFunc, ok := ssaFuncMap[funcDecl.Name.Name]
+				if !ok && funcDecl.Name.Name == "init" {
+					ssaFunc, _ = ssaFuncMap["init#1"]
+				}
+
 				funcData := &FuncData{
 					FuncDecl:   funcDecl,
 					SsaFunc:    ssaFunc,

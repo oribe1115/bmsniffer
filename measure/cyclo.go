@@ -12,6 +12,9 @@ var indexExist = struct{}{}
 
 // CyclomaticComplexity 対象の関数のCYCLOを計算する
 func CyclomaticComplexity(ssaFunc *ssa.Function) int {
+	if ssaFunc == nil {
+		return -1
+	}
 	// v(G) = e-n+p
 	n, e := countFlowGraphValues(ssaFunc)
 	p := 2 // 連結されたコンポーネントの数 決め打ちでこれでいいのか確認
