@@ -3,6 +3,7 @@ package bmsniffer
 import (
 	"fmt"
 	"go/ast"
+	"regexp"
 
 	"github.com/oribe1115/bmsniffer/measure"
 	"golang.org/x/tools/go/analysis"
@@ -17,6 +18,7 @@ var (
 	maxnestingLimit int
 	novLimit        int
 	cycloLimit      int
+	includeTest     bool
 )
 
 // Analyzer is ...
@@ -45,15 +47,23 @@ func init() {
 	Analyzer.Flags.IntVar(&maxnestingLimit, "maxnesting", 0, "limit for MAXNESTING")
 	Analyzer.Flags.IntVar(&novLimit, "nov", 0, "limit for NOV")
 	Analyzer.Flags.IntVar(&cycloLimit, "cyclo", 0, "limit for CYCLO")
+	Analyzer.Flags.BoolVar(&includeTest, "test", false, "include test codes for analysis")
 }
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	ssaInfo := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
 	ssaData := measure.GetSSAData(ssaInfo)
+	fset := ssaInfo.Pkg.Prog.Fset
 
 	list := &FuncDataList{}
+	testFileRegExp := regexp.MustCompile(`.*_test\.go$`)
 
 	for _, file := range pass.Files {
+		fileName := fset.File(file.Pos()).Name()
+		if !includeTest && testFileRegExp.MatchString(fileName) {
+			continue
+		}
+
 		for _, decl := range file.Decls {
 			if funcDecl, _ := decl.(*ast.FuncDecl); funcDecl != nil {
 				funcData := &FuncData{
