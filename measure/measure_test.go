@@ -58,3 +58,17 @@ func getSSAFunc(t *testing.T, filename string) *ssa.Function {
 
 	return ssainfo.SrcFuncs[0]
 }
+
+func getSSADataAndFuncName(t *testing.T, filename string) (string, *SSAData) {
+	t.Helper()
+
+	testdata := analysistest.TestData()
+	result := analysistest.Run(t, testdata, buildssa.Analyzer, filename)[0]
+
+	ssainfo := result.Result.(*buildssa.SSA)
+
+	funcName := ssainfo.SrcFuncs[0].Name()
+	ssaData := GetSSAData(ssainfo)
+
+	return funcName, ssaData
+}
