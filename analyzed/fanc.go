@@ -14,5 +14,5 @@ type Func struct {
 }
 
 func (fn *Func) Print() {
-	fmt.Println(fn.FuncDecl.Name.String(), fn.Loc, fn.Maxnesting, fn.Nov, fn.Cyclo)
+	fmt.Printf("  %s: %d-%d-%d-%d\n", fn.FuncDecl.Name.String(), fn.Loc, fn.Maxnesting, fn.Nov, fn.Cyclo)
 }
