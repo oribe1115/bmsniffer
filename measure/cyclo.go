@@ -1,6 +1,8 @@
 package measure
 
 import (
+	"fmt"
+
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -30,6 +32,12 @@ func countFlowGraphValues(ssaFunc *ssa.Function) (nodeCount int, edgeCount int) 
 		tmpNode := nodeQueue.dequeue()
 		if _, exist := checkedNodeIndexMap[tmpNode.Index]; exist {
 			continue
+		}
+
+		for _, instr := range tmpNode.Instrs {
+			if mClosure, _ := instr.(*ssa.MakeClosure); mClosure != nil {
+				fmt.Println(mClosure.String(), ": ", mClosure.Fn.Name())
+			}
 		}
 
 		nodeCount++
