@@ -1,8 +1,6 @@
 package measure
 
 import (
-	"fmt"
-
 	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/ssa"
 )
@@ -53,12 +51,7 @@ func (sd *SSAData) countFlowGraphValues(ssaFunc *ssa.Function) (nodeCount int, e
 
 		for _, instr := range tmpNode.Instrs {
 			if mClosure, _ := instr.(*ssa.MakeClosure); mClosure != nil {
-				cSSAFunc := sd.getSSAFunc(mClosure.Fn.Name())
-				if cSSAFunc == nil {
-					fmt.Println(ssaFunc.Name(), mClosure.Fn.Name())
-					nodeCount++
-					edgeCount += 2
-				} else {
+				if cSSAFunc := sd.getSSAFunc(mClosure.Fn.Name()); cSSAFunc != nil {
 					cNodeCount, cEdgeCount := sd.countFlowGraphValues(cSSAFunc)
 					nodeCount += cNodeCount + 1
 					edgeCount += cEdgeCount + 2
