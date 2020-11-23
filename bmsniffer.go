@@ -1,10 +1,10 @@
 package bmsniffer
 
 import (
-	"fmt"
 	"go/ast"
 	"regexp"
 
+	"github.com/oribe1115/bmsniffer/analyzed"
 	"github.com/oribe1115/bmsniffer/measure"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/buildssa"
@@ -32,16 +32,6 @@ var Analyzer = &analysis.Analyzer{
 	},
 }
 
-type FuncData struct {
-	FuncDecl   *ast.FuncDecl
-	Loc        int
-	Maxnesting int
-	Nov        int
-	Cyclo      int
-}
-
-type FuncDataList []*FuncData
-
 func init() {
 	Analyzer.Flags.IntVar(&locLimit, "loc", 0, "limit for LOC")
 	Analyzer.Flags.IntVar(&maxnestingLimit, "maxnesting", 0, "limit for MAXNESTING")
@@ -55,56 +45,42 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	ssaData := measure.GetSSAData(ssaInfo)
 	fset := ssaInfo.Pkg.Prog.Fset
 
-	list := &FuncDataList{}
-	testFileRegExp := regexp.MustCompile(`.*_test\.go$`)
+	pkgData := analyzed.NewPkg()
 
 	for _, file := range pass.Files {
 		fileName := fset.File(file.Pos()).Name()
-		if !includeTest && testFileRegExp.MatchString(fileName) {
-			continue
-		}
+		fileData := analyzed.NewFile(fileName, file)
 
 		for _, decl := range file.Decls {
 			if funcDecl, _ := decl.(*ast.FuncDecl); funcDecl != nil {
-				funcData := &FuncData{
+				funcData := &analyzed.Func{
 					FuncDecl:   funcDecl,
 					Loc:        measure.LineOfCode(pass.Fset, funcDecl),
 					Maxnesting: measure.MaxNestingLevel(funcDecl),
 					Nov:        measure.NumberOfAccessedVariables(funcDecl, pass.TypesInfo),
 					Cyclo:      measure.CyclomaticComplexity(funcDecl.Name.Name, ssaData),
 				}
-				list.Add(funcData)
+				fileData.AddFunc(funcData)
 			}
 		}
+
+		pkgData.AddFile(fileData)
 	}
 
-	filterdList := list.Filterd(func(fd *FuncData) bool {
-		return fd.Loc >= locLimit && fd.Maxnesting >= maxnestingLimit && fd.Nov >= novLimit && fd.Cyclo >= cycloLimit
+	pkgData.AddFileFilter(func(file *analyzed.File) bool {
+		testFileRegExp := regexp.MustCompile(`.*_test\.go$`)
+		if !includeTest && testFileRegExp.MatchString(file.Name) {
+			return false
+		}
+		return true
 	})
 
-	filterdList.PrintAll()
+	pkgData.AddFuncFilter(func(fn *analyzed.Func) bool {
+		return fn.Loc >= locLimit && fn.Maxnesting >= maxnestingLimit && fn.Nov >= novLimit && fn.Cyclo >= cycloLimit
+	})
+
+	pkgData.Filter()
+	pkgData.Print()
 
 	return nil, nil
-}
-
-func (fl *FuncDataList) Add(funcData *FuncData) {
-	*fl = append(*fl, funcData)
-}
-
-func (fl *FuncDataList) Filterd(filter func(*FuncData) bool) *FuncDataList {
-	newList := &FuncDataList{}
-	for _, funcData := range *fl {
-		if filter(funcData) {
-			newList.Add(funcData)
-		}
-	}
-
-	return newList
-}
-
-func (fl *FuncDataList) PrintAll() {
-	fmt.Println("funcName: LOC-MAXNESTING-NOV-CYCLO")
-	for _, funcData := range *fl {
-		fmt.Println(funcData.FuncDecl.Name.String(), funcData.Loc, funcData.Maxnesting, funcData.Nov, funcData.Cyclo)
-	}
 }
