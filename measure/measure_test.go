@@ -9,7 +9,6 @@ import (
 	"golang.org/x/tools/go/analysis/analysistest"
 	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
-	"golang.org/x/tools/go/ssa"
 )
 
 func getFsetAndFuncDecl(t *testing.T, filename string) (*token.FileSet, *ast.FuncDecl) {
@@ -46,17 +45,6 @@ func getFuncDeclAndTypeInfo(t *testing.T, filename string) (*ast.FuncDecl, *type
 	}
 
 	return funcDecl, pass.TypesInfo
-}
-
-func getSSAFunc(t *testing.T, filename string) *ssa.Function {
-	t.Helper()
-
-	testdata := analysistest.TestData()
-	result := analysistest.Run(t, testdata, buildssa.Analyzer, filename)[0]
-
-	ssainfo := result.Result.(*buildssa.SSA)
-
-	return ssainfo.SrcFuncs[0]
 }
 
 func getSSADataAndFuncName(t *testing.T, filename string) (string, *SSAData) {

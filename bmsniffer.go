@@ -8,7 +8,6 @@ import (
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
-	"golang.org/x/tools/go/ssa"
 )
 
 const doc = "bmsniffer is ..."
@@ -33,7 +32,6 @@ var Analyzer = &analysis.Analyzer{
 
 type FuncData struct {
 	FuncDecl   *ast.FuncDecl
-	SsaFunc    *ssa.Function
 	Loc        int
 	Maxnesting int
 	Nov        int
@@ -51,25 +49,19 @@ func init() {
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	ssaInfo := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
-	ssaFuncMap := getSSAFuncMap(ssaInfo)
+	ssaData := measure.GetSSAData(ssaInfo)
 
 	list := &FuncDataList{}
 
 	for _, file := range pass.Files {
 		for _, decl := range file.Decls {
 			if funcDecl, _ := decl.(*ast.FuncDecl); funcDecl != nil {
-				ssaFunc, ok := ssaFuncMap[funcDecl.Name.Name]
-				if !ok && funcDecl.Name.Name == "init" {
-					ssaFunc, _ = ssaFuncMap["init#1"]
-				}
-
 				funcData := &FuncData{
 					FuncDecl:   funcDecl,
-					SsaFunc:    ssaFunc,
 					Loc:        measure.LineOfCode(pass.Fset, funcDecl),
 					Maxnesting: measure.MaxNestingLevel(funcDecl),
 					Nov:        measure.NumberOfAccessedVariables(funcDecl, pass.TypesInfo),
-					Cyclo:      measure.CyclomaticComplexity(ssaFunc),
+					Cyclo:      measure.CyclomaticComplexity(funcDecl.Name.Name, ssaData),
 				}
 				list.Add(funcData)
 			}
@@ -83,16 +75,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	filterdList.PrintAll()
 
 	return nil, nil
-}
-
-func getSSAFuncMap(ssaInfo *buildssa.SSA) map[string]*ssa.Function {
-	ssaFuncMap := map[string]*ssa.Function{}
-
-	for _, ssaFunc := range ssaInfo.SrcFuncs {
-		ssaFuncMap[ssaFunc.Name()] = ssaFunc
-	}
-
-	return ssaFuncMap
 }
 
 func (fl *FuncDataList) Add(funcData *FuncData) {

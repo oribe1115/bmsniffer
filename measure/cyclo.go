@@ -16,45 +16,7 @@ type blockQueue struct {
 var indexExist = struct{}{}
 
 // CyclomaticComplexity 対象の関数のCYCLOを計算する
-func CyclomaticComplexity(ssaFunc *ssa.Function) int {
-	if ssaFunc == nil {
-		return -1
-	}
-	// v(G) = e-n+p
-	n, e := countFlowGraphValues(ssaFunc)
-	p := 2 // 連結されたコンポーネントの数 決め打ちでこれでいいのか確認
-	return e - n + p
-}
-
-func countFlowGraphValues(ssaFunc *ssa.Function) (nodeCount int, edgeCount int) {
-	checkedNodeIndexMap := map[int]struct{}{}
-	nodeQueue := initIntQueue()
-	nodeQueue.enqueue(ssaFunc.Blocks[0])
-
-	for nodeQueue.len() != 0 {
-		tmpNode := nodeQueue.dequeue()
-		if _, exist := checkedNodeIndexMap[tmpNode.Index]; exist {
-			continue
-		}
-
-		// for _, instr := range tmpNode.Instrs {
-		// 	if mClosure, _ := instr.(*ssa.MakeClosure); mClosure != nil {
-		// 		fmt.Println(mClosure.String(), ": ", mClosure.Fn.Name())
-		// 	}
-		// }
-
-		nodeCount++
-		checkedNodeIndexMap[tmpNode.Index] = indexExist
-		for _, succ := range tmpNode.Succs {
-			edgeCount++
-			nodeQueue.enqueue(succ)
-		}
-	}
-
-	return nodeCount, edgeCount
-}
-
-func CyclomaticComplexityNew(funcName string, ssaData *SSAData) int {
+func CyclomaticComplexity(funcName string, ssaData *SSAData) int {
 	ssaFunc := ssaData.getSSAFunc(funcName)
 	if ssaFunc == nil {
 		return -1
