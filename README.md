@@ -32,13 +32,13 @@ Default: `0`
 $ go vet -vettool=`which bmsniffer` -bmsniffer.maxnesting=3 ./...
 ```
 
-### bmsniffer.nov
-Baseline for NOV
+### bmsniffer.noav
+Baseline for NOAV
 
 Default: `0`
 
 ```sh
-$ go vet -vettool=`which bmsniffer` -bmsniffer.nov=10 ./...
+$ go vet -vettool=`which bmsniffer` -bmsniffer.noav=10 ./...
 ```
 
 ### bmsniffer.cyclo

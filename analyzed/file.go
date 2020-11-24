@@ -48,7 +48,7 @@ func (file *File) filterFunc(fn *Func) bool {
 }
 
 func (file *File) Print() {
-	fmt.Printf("--- %s: LOC-MAXNESTING-NOV-CYCLO\n", file.Name)
+	fmt.Printf("--- %s: LOC-MAXNESTING-NOAV-CYCLO\n", file.Name)
 
 	for _, fn := range file.Funcs {
 		fn.Print()

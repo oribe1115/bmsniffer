@@ -16,7 +16,7 @@ const doc = "bmsniffer is ..."
 var (
 	locLimit        int
 	maxnestingLimit int
-	novLimit        int
+	noavLimit       int
 	cycloLimit      int
 	includeTest     bool
 )
@@ -35,7 +35,7 @@ var Analyzer = &analysis.Analyzer{
 func init() {
 	Analyzer.Flags.IntVar(&locLimit, "loc", 0, "baseline for LOC")
 	Analyzer.Flags.IntVar(&maxnestingLimit, "maxnesting", 0, "baseline for MAXNESTING")
-	Analyzer.Flags.IntVar(&novLimit, "nov", 0, "baseline for NOV")
+	Analyzer.Flags.IntVar(&noavLimit, "noav", 0, "baseline for NOAV")
 	Analyzer.Flags.IntVar(&cycloLimit, "cyclo", 0, "baseline for CYCLO")
 	Analyzer.Flags.BoolVar(&includeTest, "test", false, "include test codes for analysis")
 }
@@ -57,7 +57,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 					FuncDecl:   funcDecl,
 					Loc:        measure.LineOfCode(pass.Fset, funcDecl),
 					Maxnesting: measure.MaxNestingLevel(funcDecl),
-					Nov:        measure.NumberOfAccessedVariables(funcDecl, pass.TypesInfo),
+					Noav:       measure.NumberOfAccessedVariables(funcDecl, pass.TypesInfo),
 					Cyclo:      measure.CyclomaticComplexity(funcDecl.Name.Name, ssaData),
 				}
 				fileData.AddFunc(funcData)
@@ -76,7 +76,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	})
 
 	pkgData.AddFuncFilter(func(fn *analyzed.Func) bool {
-		return fn.Loc >= locLimit && fn.Maxnesting >= maxnestingLimit && fn.Nov >= novLimit && fn.Cyclo >= cycloLimit
+		return fn.Loc >= locLimit && fn.Maxnesting >= maxnestingLimit && fn.Noav >= noavLimit && fn.Cyclo >= cycloLimit
 	})
 
 	pkgData.Filter()
