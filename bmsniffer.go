@@ -33,10 +33,10 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func init() {
-	Analyzer.Flags.IntVar(&locLimit, "loc", 0, "limit for LOC")
-	Analyzer.Flags.IntVar(&maxnestingLimit, "maxnesting", 0, "limit for MAXNESTING")
-	Analyzer.Flags.IntVar(&novLimit, "nov", 0, "limit for NOV")
-	Analyzer.Flags.IntVar(&cycloLimit, "cyclo", 0, "limit for CYCLO")
+	Analyzer.Flags.IntVar(&locLimit, "loc", 0, "baseline for LOC")
+	Analyzer.Flags.IntVar(&maxnestingLimit, "maxnesting", 0, "baseline for MAXNESTING")
+	Analyzer.Flags.IntVar(&novLimit, "nov", 0, "baseline for NOV")
+	Analyzer.Flags.IntVar(&cycloLimit, "cyclo", 0, "baseline for CYCLO")
 	Analyzer.Flags.BoolVar(&includeTest, "test", false, "include test codes for analysis")
 }
 
