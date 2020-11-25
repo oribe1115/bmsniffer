@@ -67,13 +67,15 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		pkgData.AddFile(fileData)
 	}
 
-	pkgData.AddFileFilter(func(file *analyzed.File) bool {
-		testFileRegExp := regexp.MustCompile(`.*_test\.go$`)
-		if !includeTest && testFileRegExp.MatchString(file.Name) {
-			return false
-		}
-		return true
-	})
+	if !includeTest {
+		pkgData.AddFileFilter(func(file *analyzed.File) bool {
+			testFileRegExp := regexp.MustCompile(`.*_test\.go$`)
+			if testFileRegExp.MatchString(file.Name) {
+				return false
+			}
+			return true
+		})
+	}
 
 	pkgData.AddFuncFilter(func(fn *analyzed.Func) bool {
 		return fn.Loc >= locLimit && fn.Maxnesting >= maxnestingLimit && fn.Noav >= noavLimit && fn.Cyclo >= cycloLimit
